@@ -1,41 +1,62 @@
 "use client";
 
-import { IconLogin, IconMenu2 } from "@tabler/icons-react";
-import Link from "next/link";
+import { RootContext } from "@/components/RootLayout";
+import { IconChevronLeft, IconLayoutGrid } from "@tabler/icons-react";
+import clsx from "clsx";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useContext } from "react";
 import Button from "./Button";
 
-/**
- * @param {{
- *   title: string;
- *   onMenuClick?: () => void;
- * }} props
- */
-export default function Header(props) {
-  const { title = "TITLE", onMenuClick } = props;
+const Header = () => {
   const router = useRouter();
+  const { sideBarOpen, setSideBarOpen, headerState } = useContext(RootContext);
 
-  const handleLoginClick = () => {
-    router.push("/login");
-  };
+  const { title, back } = headerState;
+
+  const { data: session } = useSession();
+
+  function goBack() {
+    router.push(back);
+  }
+
+  function toggleSideBar() {
+    setSideBarOpen(!sideBarOpen);
+  }
 
   return (
-    <header className="header">
-      <button onClick={onMenuClick} className="menu-button">
-        <IconMenu2 />
-      </button>
-
-      <Link href="/" scroll={false}>
-        <h1 className="title">{title}</h1>
-      </Link>
+    <header className="app-header">
+      <Button
+        variant="hint"
+        className="action-button"
+        icon={<IconLayoutGrid />}
+        onClick={toggleSideBar}
+        fontSize="1.8rem"
+        xPad="0.3rem"
+        yPad="0.3rem"
+        stretch
+      />
 
       <Button
-        tint="aquamarine"
-        icon={<IconLogin />}
-        label="Login"
-        onClick={handleLoginClick}
-        size="sm"
+        variant="hint"
+        className={clsx("title-link", back && "back")}
+        icon={back && <IconChevronLeft stroke={2.8} />}
+        label={title}
+        onClick={() => back && router.push(back)}
+        fontSize="1.8rem"
+        xPad={back && "0.3rem"}
+        stretch
+      />
+
+      <Button
+        variant="secondary"
+        label={session ? "Sign out" : "Sign in"}
+        onClick={() => (session ? signOut() : signIn("google"))}
+        xPad="0.6rem"
+        stretch
       />
     </header>
   );
-}
+};
+
+export default Header;
