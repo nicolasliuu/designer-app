@@ -4,16 +4,18 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 // @ts-ignore
-export default NextAuth({
+export default NextAuth.default({
   providers: [
     // @ts-ignore
-    GoogleProvider({
+    GoogleProvider.default({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
 
   adapter: PrismaAdapter(prisma),
+
+  secret: process.env.NEXTAUTH_SECRET,
 
   callbacks: {
     async jwt({ token, user, account }) {
