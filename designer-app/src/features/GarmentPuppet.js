@@ -127,7 +127,7 @@ const GarmentPuppet = (props) => {
     let updatedGarment = null;
 
     while (status === 202) {
-      await pause(5000);
+      await pause(500);
 
       const res = await axios.get(`/api/garment/${garmentId}/visualize`);
       status = res.status;
